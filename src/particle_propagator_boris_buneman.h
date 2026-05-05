@@ -63,21 +63,9 @@ bool BorisBuneman<PARTICLE>::finalize() {return true;}
 template<class PARTICLE>
   void BorisBuneman<PARTICLE>::propagate(const Real xBlock,const Real yBlock,const Real zBlock,pargrid::CellID blockID,const Species& species,PARTICLE& particle,pargrid::CellID globalID) {
    bool accelerate = species.accelerate;
-   if ( (simClasses->pargrid.getNeighbourFlags(blockID) != pargrid::ALL_NEIGHBOURS_EXIST) || (Hybrid::initialFlowThrough == true) ) {
+   if ( (simClasses->pargrid.getNeighbourFlags(blockID) != pargrid::ALL_NEIGHBOURS_EXIST) || (Hybrid::useInitialFlowThrough == true) ) {
       accelerate = false;
    }
-#ifdef USE_OUTER_BOUNDARY_ZONE
-     // experimental back wall outflow
-     /*bool* outerBoundaryFlag = reinterpret_cast<bool*>(simClasses.pargrid.getUserData(Hybrid::dataOuterBoundaryFlagID));
-     if (outerBoundaryFlag[blockID] == true) {
-        if ( (particle.state[particle::X]+xBlock) < (sim->.x_min + Hybrid::outerBoundaryZone.sizeEta + Hybrid::dx)) {
-           accelerate = false;
-           particle.state[particle::VX] = -Hybrid::upstreamBulkU;
-           particle.state[particle::VY] = 0.0;
-           particle.state[particle::VZ] = 0.0;
-        }
-     }*/
-#endif
    /*if (accelerate == true) {
       Real dU[3] = { particle.state[particle::VX]-Ue[0], particle.state[particle::VY]-Ue[1], particle.state[particle::VZ]-Ue[2] };
       const Real half_alpha = 0.5*species.q*sim->dt/species.m;
@@ -92,8 +80,8 @@ template<class PARTICLE>
       particle.state[particle::VZ] += beta*( dUxb[2] + dUxbxb[2] );
 
       const Real v2 = sqr(particle.state[particle::VX]) + sqr(particle.state[particle::VY]) + sqr(particle.state[particle::VZ]);
-      if (v2 > Hybrid::maxVi2) {
-	 const Real norm = sqrt(Hybrid::maxVi2/v2);
+      if (v2 > Hybrid::maxIonSpeed2) {
+	 const Real norm = sqrt(Hybrid::maxIonSpeed2/v2);
 	 particle.state[particle::VX] *= norm;
 	 particle.state[particle::VY] *= norm;
 	 particle.state[particle::VZ] *= norm;
@@ -117,7 +105,7 @@ template<class PARTICLE>
       // E = -Ue x B
       crossProduct(B,Ue,E);
       // E = -Ue x B - grad(pe)/(qe*ne)
-      if (Hybrid::useElectronPressureElectricField == true) {
+      if (Hybrid::useElectronPressure == true) {
          for (unsigned int i=0;i<3;++i) { E[i] += Ep[i]; }
       }
       Real tx,ty,tz,sx,sy,sz,dvx,dvy,dvz,vmx,vmy,vmz,v0x,v0y,v0z,vpx,vpy,vpz,qmideltT2,t2,b2;
@@ -156,8 +144,8 @@ template<class PARTICLE>
 	 }
       }
       const Real v2 = sqr(particle.state[particle::VX]) + sqr(particle.state[particle::VY]) + sqr(particle.state[particle::VZ]);
-      if (v2 > Hybrid::maxVi2) {
-	 const Real norm = sqrt(Hybrid::maxVi2/v2);
+      if (v2 > Hybrid::maxIonSpeed2) {
+	 const Real norm = sqrt(Hybrid::maxIonSpeed2/v2);
 	 particle.state[particle::VX] *= norm;
 	 particle.state[particle::VY] *= norm;
 	 particle.state[particle::VZ] *= norm;

@@ -33,9 +33,6 @@ pargrid::DataID Hybrid::dataFaceJID;
 
 // cell data
 pargrid::DataID Hybrid::dataCellRhoQiID;
-#ifdef USE_BACKGROUND_CHARGE_DENSITY
-pargrid::DataID Hybrid::dataCellRhoQiBgID;
-#endif
 pargrid::DataID Hybrid::dataCellBID;
 pargrid::DataID Hybrid::dataCellJID;
 pargrid::DataID Hybrid::dataCellUeID;
@@ -70,10 +67,6 @@ pargrid::DataID Hybrid::dataInnerFlagFieldID;
 pargrid::DataID Hybrid::dataInnerFlagNodeID;
 pargrid::DataID Hybrid::dataInnerFlagParticleID;
 pargrid::DataID Hybrid::dataInnerFlagCellEpID;
-#ifdef USE_OUTER_BOUNDARY_ZONE
-pargrid::DataID Hybrid::dataOuterBoundaryFlagID;
-pargrid::DataID Hybrid::dataOuterBoundaryFlagNodeID;
-#endif
 #ifdef USE_DETECTORS
 // detector: particle
 pargrid::DataID Hybrid::dataDetectorCellParticleFlagID;
@@ -127,40 +120,38 @@ Real Hybrid::R_object;
 Real Hybrid::R2_fieldObstacle;
 Real Hybrid::fieldObstacleUe[3];
 Real Hybrid::R2_particleObstacle;
-Real Hybrid::R2_cellEpObstacle;
 Real Hybrid::upstreamBulkU;
 Real Hybrid::M_object;
 Real Hybrid::GMdt;
-bool Hybrid::initialFlowThrough;
-Real Hybrid::initialFlowThroughPeriod;
-Real Hybrid::maxUe2;
-Real Hybrid::maxVi2;
-Real Hybrid::maxVi;
-Real Hybrid::terminateLimitMaxB;
-Real Hybrid::minRhoQi;
-Real Hybrid::maxE2;
-Real Hybrid::maxVw;
 bool Hybrid::useHallElectricField;
-bool Hybrid::useElectronPressureElectricField;
-bool Hybrid::useAdiabaticElectronPressure;
+bool Hybrid::useElectronPressure;
+Real Hybrid::electronTemperature;
+unsigned int Hybrid::electronGamma;
+Real Hybrid::electronPressureCoeff;
+bool Hybrid::useIsothermalElectrons;
+Real Hybrid::R2_zeroElectronPressure;
 #ifdef USE_B_CONSTANT
 bool Hybrid::includeConstantB0InFaradaysLaw = false;
 #endif
-Real Hybrid::electronTemperature;
-Real Hybrid::electronPressureCoeff;
 Real Hybrid::upstreamMacroPleRatio;
-bool Hybrid::useGravity;
-int Hybrid::Efilter;
-Real Hybrid::EfilterNodeGaussSigma;
-Real Hybrid::EfilterNodeGaussCoeffs[4];
+bool Hybrid::useGravity = false;
 Real Hybrid::resistivityEta;
 Real Hybrid::resistivityR2;
 vector<Real> Hybrid::resistivitySphericalEta;
 vector<Real> Hybrid::resistivitySphericalR2;
 Real (*Hybrid::resistivityProfilePtr)(Simulation& sim,SimulationClasses&,const Real x,const Real y,const Real z);
-#ifdef USE_OUTER_BOUNDARY_ZONE
-OuterBoundaryZone Hybrid::outerBoundaryZone;
-#endif
+Real Hybrid::maxIonSpeed;
+Real Hybrid::maxIonSpeed2;
+Real Hybrid::maxElectronSpeed2;
+Real Hybrid::minIonChargeDensity;
+Real Hybrid::maxElectricField2;
+Real Hybrid::maxWhistlerSpeed;
+Real Hybrid::maxBStopRun;
+bool Hybrid::useInitialFlowThrough;
+Real Hybrid::initialFlowThroughPeriod;
+int Hybrid::N_linearSmoothingsNodeE;
+bool Hybrid::useGaussianSmoothingNodeE = false;
+Real Hybrid::gaussianSmoothingCoeffsNodeE[4];
 Real Hybrid::IMFBx;
 Real Hybrid::IMFBy;
 Real Hybrid::IMFBz;
@@ -204,8 +195,6 @@ vector<string> Hybrid::outputPopVarStr;
 vector<int> Hybrid::outputPopVarId;
 // ids (=popid-1) of particle populations included in each output particle variable
 vector< vector<unsigned int> > Hybrid::outputPopVarIdVector;
-// popids of particle populations included in the total plasma variables
-vector<unsigned int> Hybrid::outputPlasmaPopId;
 // output cell variables
 map<string,bool> Hybrid::outputCellParams;
 

@@ -146,14 +146,6 @@ inline void cross(const Real a[3], const Real b[3], Real result[3]) {
    result[2] = a[0]*b[1] - a[1]*b[0];
 }
 
-#ifdef USE_OUTER_BOUNDARY_ZONE
-struct OuterBoundaryZone {
-   int typeMinRhoQi=0;
-   Real sizeMinRhoQi=0.0,minRhoQi=0.0;
-   bool constUe = false;
-};
-#endif
-
 // TBD: new variable handling
 /*template<typename T>
 struct HybridVariable {
@@ -177,9 +169,6 @@ struct Hybrid {
 
    // cell data
    static pargrid::DataID dataCellRhoQiID;
-#ifdef USE_BACKGROUND_CHARGE_DENSITY
-   static pargrid::DataID dataCellRhoQiBgID;
-#endif
    static pargrid::DataID dataCellBID;
    static pargrid::DataID dataCellJID;
    static pargrid::DataID dataCellUeID;
@@ -214,10 +203,6 @@ struct Hybrid {
    static pargrid::DataID dataInnerFlagNodeID;
    static pargrid::DataID dataInnerFlagParticleID;
    static pargrid::DataID dataInnerFlagCellEpID;
-#ifdef USE_OUTER_BOUNDARY_ZONE
-   static pargrid::DataID dataOuterBoundaryFlagID;
-   static pargrid::DataID dataOuterBoundaryFlagNodeID;
-#endif
 #ifdef USE_DETECTORS
    // detector: particles
    static pargrid::DataID dataDetectorCellParticleFlagID;
@@ -271,40 +256,38 @@ struct Hybrid {
    static Real R2_fieldObstacle;
    static Real fieldObstacleUe[3];
    static Real R2_particleObstacle;
-   static Real R2_cellEpObstacle;
    static Real upstreamBulkU;
    static Real M_object;
    static Real GMdt;
-   static bool initialFlowThrough;
-   static Real initialFlowThroughPeriod;
-   static Real maxUe2;
-   static Real maxVi2;
-   static Real maxVi;
-   static Real terminateLimitMaxB;
-   static Real minRhoQi;
-   static Real maxE2;
-   static Real maxVw;
    static Real resistivityEta;
    static Real resistivityR2;
    static std::vector<Real> resistivitySphericalEta;
    static std::vector<Real> resistivitySphericalR2;
    static Real (*resistivityProfilePtr)(Simulation& sim,SimulationClasses&,const Real x,const Real y,const Real z);
-#ifdef USE_OUTER_BOUNDARY_ZONE
-   static OuterBoundaryZone outerBoundaryZone;
-#endif
+   static Real maxIonSpeed;
+   static Real maxIonSpeed2;
+   static Real maxElectronSpeed2;
+   static Real minIonChargeDensity;
+   static Real maxElectricField2;
+   static Real maxWhistlerSpeed;
+   static Real maxBStopRun;
+   static bool useInitialFlowThrough;
+   static Real initialFlowThroughPeriod;
+   static int N_linearSmoothingsNodeE;
+   static bool useGaussianSmoothingNodeE;
+   static Real gaussianSmoothingCoeffsNodeE[4];
    static bool useHallElectricField;
 #ifdef USE_B_CONSTANT
    static bool includeConstantB0InFaradaysLaw;
 #endif
-   static bool useElectronPressureElectricField;
-   static bool useAdiabaticElectronPressure;
+   static bool useElectronPressure;
    static Real electronTemperature;
+   static unsigned int electronGamma;
    static Real electronPressureCoeff;
+   static bool useIsothermalElectrons;
+   static Real R2_zeroElectronPressure;
    static Real upstreamMacroPleRatio;
    static bool useGravity;
-   static int Efilter;
-   static Real EfilterNodeGaussSigma;
-   static Real EfilterNodeGaussCoeffs[4];
    static Real IMFBx,IMFBy,IMFBz;
    static bool IMFBoundaryCellB[6];
    static bool IMFBoundaryFaceB[6];
@@ -322,7 +305,6 @@ struct Hybrid {
    static std::vector<std::string> outputPopVarStr;
    static std::vector<int> outputPopVarId;
    static std::vector< std::vector<unsigned int> > outputPopVarIdVector;
-   static std::vector<unsigned int> outputPlasmaPopId;
    static std::map<std::string,bool> outputCellParams;
 
    // particle population and field logs and their counters
